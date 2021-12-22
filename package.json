@@ -39,7 +39,8 @@
 	},
 	"dependencies": {
 		"@tensorflow-models/handpose": "^0.0.7",
-		"@tensorflow/tfjs": "^3.12.0"
+		"@tensorflow/tfjs": "^3.12.0",
+		"fingerpose": "^0.1.0"
 	},
 	"browserslist": {
 		"production": [
