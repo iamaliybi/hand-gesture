@@ -1,0 +1,131 @@
+#alert-area {
+	position: fixed;
+	z-index: 9999;
+
+	&[data-placement^="top"] {
+		top: 25px;
+	}
+
+	&[data-placement^="bottom"] {
+		bottom: 25px;
+	}
+
+	&[data-placement$="right"] {
+		right: 25px;
+
+		.alert-container > .alert-message {
+			&.active {
+				-webkit-animation-name: bounceInRight;
+				animation-name: bounceInRight;
+			}
+
+			&:not(.active) {
+				-webkit-animation-name: bounceOutRight;
+				animation-name: bounceOutRight;
+			}
+		}
+	}
+
+	&[data-placement$="left"] {
+		left: 25px;
+
+		.alert-container > .alert-message {
+			&.active {
+				-webkit-animation-name: bounceInLeft;
+				animation-name: bounceInLeft;
+			}
+
+			&:not(.active) {
+				-webkit-animation-name: bounceOutLeft;
+				animation-name: bounceOutLeft;
+			}
+		}
+	}
+
+	&[data-placement$="center"] {
+		left: 50%;
+		transform: translateX(-50%);
+		-webkit-transform: translateX(-50%);
+		-moz-transform: translateX(-50%);
+	}
+
+	&[data-placement="bottom-center"] {
+		.alert-container > .alert-message {
+			&.active {
+				-webkit-animation-name: bounceInUp;
+				animation-name: bounceInUp;
+			}
+
+			&:not(.active) {
+				-webkit-animation-name: bounceOutDown;
+				animation-name: bounceOutDown;
+			}
+		}
+	}
+
+	&[data-placement="top-center"] {
+		.alert-container > .alert-message {
+			&.active {
+				-webkit-animation-name: bounceInDown;
+				animation-name: bounceInDown;
+			}
+
+			&:not(.active) {
+				-webkit-animation-name: bounceOutUp;
+				animation-name: bounceOutUp;
+			}
+		}
+	}
+
+	.alert-container {
+		position: relative;
+		max-width: 350px;
+		min-width: 320px;
+		display: flex;
+		flex-direction: column;
+
+		& > .alert-message {
+			cursor: pointer;
+			padding: 0 16px;
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			width: 100%;
+			min-height: 56px;
+			border-radius: 4px;
+			overflow: hidden;
+			margin: 0 0 12px 0;
+			border: 1px solid;
+			border-left-width: 2px;
+			font-size: 14px;
+			font-weight: 500;
+			-webkit-animation-fill-mode: both;
+			animation-fill-mode: both;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+
+			&.alert-error {
+				background-color: #f8d7da;
+				border-color: #f5c2c7;
+				border-left-color: #842029;
+				color: #842029;
+			}
+
+			&.alert-success {
+				background-color: #d1e7dd;
+				border-color: #badbcc;
+				border-left-color: #0f5132;
+				color: #0f5132;
+			}
+
+			&.alert-warning {
+				background-color: #fff3cd;
+				border-color: #ffecb5;
+				border-left-color: #664d03;
+				color: #664d03;
+			}
+		}
+	}
+}
