@@ -14,6 +14,8 @@ import './assets/scss/app.scss';
 /* Variables */
 const ALERT = new alertJs({ closeByClick: false });
 
+const FPS = 60;
+
 let wrapper;
 
 let ctx;
@@ -138,18 +140,37 @@ const loadModels = () => {
 }
 
 const detect = async (net) => {
-	// Create canvas
 	const canvas = getCanvas();
+	wrapper.append(
+		createEl('div', { class: 'webcam' }, canvas)
+	);
 
+	video.parentElement.classList.add('hidden');
+	video.nextElementSibling.remove();
+
+	setInterval(() => predictions(net, canvas), FPS);
+}
+
+const predictions = async (net, canvas) => {
 	// Detect
 	const hands = await net.estimateHands(video);
+	ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
 
 	if (hands.length > 0) {
-	} else {
-		ALERT.error("Your hand could not be found", {
-			stable: true,
-		});
+		const keypoints = hands[0].landmarks;
+
+		for (let i = 0; i < keypoints.length; i++) {
+			const y = keypoints[i][0];
+			const x = keypoints[i][1];
+			drawPoint(x - 2, y - 2, 3);
+		}
 	}
+}
+
+const drawPoint = (y, x, r) => {
+	ctx.beginPath();
+	ctx.arc(x, y, r, 0, 2 * Math.PI);
+	ctx.fill();
 }
 
 document.addEventListener('DOMContentLoaded', init);
