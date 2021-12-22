@@ -1,0 +1,49 @@
+.social-media {
+	justify-content: center;
+	display: flex;
+	flex-wrap: wrap;
+	position: absolute;
+	left: 50%;
+	top: 5%;
+	transform: translateX(-50%);
+	-webkit-transform: translateX(-50%);
+	-moz-transform: translateX(-50%);
+
+	.link {
+		background-color: var(--t-bg-color);
+		border-radius: 28%;
+		width: 6.4rem;
+		height: 6.4rem;
+		margin: 0 2.4rem;
+		display: flex;
+		justify-content: center;
+		color: var(--t-text-color);
+		align-items: center;
+		box-shadow: 0 0.5rem 1.5rem -0.5rem rgba(25, 26, 32, 0.5);
+
+		svg {
+			width: 2.4rem;
+			transition: transform 250ms;
+			-webkit-transition: transform 250ms;
+			-moz-transition: transform 250ms;
+		}
+
+		&:hover svg {
+			transform: scale(1.2);
+		}
+
+		&:first-child {
+			margin-left: 0;
+		}
+
+		&:last-child {
+			margin-right: 0;
+		}
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.social-media {
+		width: max-content;
+	}
+}

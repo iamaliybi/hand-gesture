@@ -1,0 +1,32 @@
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	max-width: 1280px;
+	max-height: 100%;
+	width: 100vw;
+	background-color: #24262e;
+	margin: 0 auto;
+
+	@import "social-media";
+
+	@import "wrapper";
+}
+
+@media screen and (max-width: 1280px) {
+	.container {
+		max-width: 992px;
+	}
+}
+
+@media screen and (max-width: 992px) {
+	.container {
+		max-width: 768px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.container {
+		max-width: 100%;
+	}
+}

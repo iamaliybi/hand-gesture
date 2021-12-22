@@ -1,0 +1,9 @@
+@use "sass:list";
+@use "sass:map";
+
+:root {
+	--t-text-color: rgb(170, 170, 170);
+	--t-bg-color: rgb(36, 38, 46);
+}
+
+@import "styles";
