@@ -44,7 +44,29 @@ const init = () => {
 		});
 }
 
-const renderLoading = () => {
+const renderVideo = stream => {
+	// Load Video webcam
+	video = createEl(
+		'video',
+		{
+			width: 640,
+			height: 480
+		}
+	);
+
+	const webcam = createEl('div', { class: 'webcam' }, video);
+	video.srcObject = stream;
+	video.muted = 1;
+
+	// Append video to .wrapper
+	wrapper.append(webcam);
+
+	// Configuration
+	video.play();
+	video.addEventListener('loadeddata', loadModels);
+}
+
+const getLoading = () => {
 	return createEl(
 		'div',
 		{
@@ -60,34 +82,14 @@ const renderLoading = () => {
 	);
 }
 
-const renderCanvas = () => {
+const getCanvas = () => {
 	const canvas = createEl('canvas');
-	ctx = canvas.createContext('2d');
+	ctx = canvas.getContext('2d');
 
 	canvas.width = video.videoWidth;
 	canvas.height = video.videoHeight;
 
-	wrapper.append(canvas);
-}
-
-const renderVideo = stream => {
-	// Load Video
-	video = createEl(
-		'video',
-		{
-			width: 640,
-			height: 480
-		}
-	);
-	video.srcObject = stream;
-	video.muted = 1;
-
-	// Append video to .wrapper
-	wrapper.append(video);
-
-	// Configuration
-	video.play();
-	video.addEventListener('loadeddata', loadModels);
+	return canvas;
 }
 
 const getPermissions = () => {
@@ -114,9 +116,40 @@ const getPermissions = () => {
 }
 
 const loadModels = () => {
+	// Render Loading
+	video.parentElement.append(getLoading());
+
+	// Show alert
 	const at = ALERT.warning("Loading Models...", {
 		stable: true,
 	});
+
+	// Load
+	handpose.load()
+		.then(detect)
+		.catch(() => {
+			ALERT.error("Sorry, an error occurred", {
+				stable: true,
+			});
+		})
+		.finally(() => {
+			at.end();
+		})
+}
+
+const detect = async (net) => {
+	// Create canvas
+	const canvas = getCanvas();
+
+	// Detect
+	const hands = await net.estimateHands(video);
+
+	if (hands.length > 0) {
+	} else {
+		ALERT.error("Your hand could not be found", {
+			stable: true,
+		});
+	}
 }
 
 document.addEventListener('DOMContentLoaded', init);
