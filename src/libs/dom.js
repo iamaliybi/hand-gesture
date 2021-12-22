@@ -1,11 +1,13 @@
 let wrapper;
 
-export const createEl = (type, props = {}, ...children) => {
+export const createEl = (type, props = undefined, ...children) => {
 	const el = document.createElement(type);
 
-	Object.entries(props).forEach(([name, value]) => {
-		if (value !== undefined) el.setAttribute(name, value.toString());
-	})
+	if (props) {
+		Object.entries(props).forEach(([name, value]) => {
+			if (value !== undefined) el.setAttribute(name, value.toString());
+		})
+	}
 
 	children.forEach((child) => {
 		appendChild(el, child);
