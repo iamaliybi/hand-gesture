@@ -1,0 +1,39 @@
+{
+	"name": "ai-gesture",
+	"version": "1.0.0",
+	"description": "Gestures include movement of the hands, face, or other parts of the body",
+	"main": "index.js",
+	"scripts": {
+		"start": "webpack serve --open --config config/webpack.dev.js",
+		"build": "webpack --config config/webpack.prod.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/edward-joseph/AI-gesture.git"
+	},
+	"keywords": [
+		"gesture"
+	],
+	"author": "Ali Yaghoubi",
+	"license": "GNU",
+	"bugs": {
+		"url": "https://github.com/edward-joseph/AI-gesture/issues"
+	},
+	"homepage": "https://github.com/edward-joseph/AI-gesture#readme",
+	"devDependencies": {
+		"@babel/core": "^7.16.5",
+		"@babel/plugin-syntax-dynamic-import": "^7.8.3",
+		"@babel/preset-env": "^7.16.5",
+		"babel-loader": "^8.2.3",
+		"css-loader": "^6.5.1",
+		"html-loader": "^3.0.1",
+		"html-webpack-plugin": "^5.5.0",
+		"sass": "^1.45.1",
+		"sass-loader": "^12.4.0",
+		"style-loader": "^3.3.1",
+		"webpack": "^5.65.0",
+		"webpack-cli": "^4.9.1",
+		"webpack-dev-server": "^4.7.0",
+		"webpack-merge": "^5.8.0"
+	}
+}
