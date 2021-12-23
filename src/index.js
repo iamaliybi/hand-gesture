@@ -1,4 +1,3 @@
-import * as tfjs from "@tensorflow/tfjs";
 import * as handpose from "@tensorflow-models/hand-pose-detection";
 import '@tensorflow/tfjs-backend-webgl';
 
@@ -21,6 +20,10 @@ const FPS = 60;
 let wrapper;
 
 let ctx;
+
+let drawing_ctx;
+
+let draw_region;
 
 let video;
 
@@ -70,6 +73,19 @@ const renderVideo = stream => {
 	video.addEventListener('loadeddata', loadModels);
 }
 
+const renderDrawingCanvas = () => {
+	const canvas = getCanvas();
+	drawing_ctx = canvas.getContext('2d');
+
+	canvas.style.position = 'absolute';
+	canvas.style.zIndex = 99;
+
+	drawing_ctx.fillStyle = 'rgb(255, 89, 81)';
+	drawing_ctx.strokeStyle = 'rgb(255, 89, 81)';
+
+	wrapper.append(canvas);
+}
+
 const getLoading = () => {
 	return createEl(
 		'div',
@@ -88,7 +104,6 @@ const getLoading = () => {
 
 const getCanvas = () => {
 	const canvas = createEl('canvas');
-	ctx = canvas.getContext('2d');
 
 	canvas.width = video.videoWidth;
 	canvas.height = video.videoHeight;
@@ -132,7 +147,7 @@ const loadModels = () => {
 	const model = handpose.SupportedModels.MediaPipeHands;
 	handpose
 		.createDetector(model, {
-			maxHands: 2,
+			maxHands: 1,
 			runtime: 'tfjs',
 			detectorModelUrl: '/assets/models/detector.json',
 			// landmarkModelUrl: '/assets/models/landmark.json',
@@ -151,9 +166,15 @@ const loadModels = () => {
 }
 
 const detect = async (net) => {
+	// Main canvas
 	const canvas = getCanvas();
+	ctx = canvas.getContext('2d');
 	ctx.fillStyle = 'rgb(217, 217, 217)';
 	ctx.strokeStyle = 'rgb(255, 255, 255)';
+	
+	// Drawing
+	renderDrawingCanvas();
+	draw_region = new Path2D();
 
 	wrapper.append(
 		createEl('div', { class: 'webcam' }, canvas)
@@ -162,11 +183,11 @@ const detect = async (net) => {
 	video.parentElement.classList.add('hidden');
 	video.nextElementSibling.remove();
 
-	predictions(net);
+	predictions(net, true);
 	setInterval(() => predictions(net), FPS);
 }
 
-const predictions = async (net) => {
+const predictions = async (net, moveable = false) => {
 	// Detect
 	const hands = await net.estimateHands(video);
 
@@ -174,25 +195,25 @@ const predictions = async (net) => {
 	draw();
 
 	if (hands.length > 0) {
-		for (let i = 0; i < hands.length; i++) {
-			const keypoints = hands[i].keypoints;
+		const keypoints = hands[0].keypoints;
 
-			// Draw path
-			drawPath(keypoints);
+		// Draw path
+		drawPath(keypoints);
 
-			for (let j = 0; j < keypoints.length; j++) {
-				const y = keypoints[j].x;
-				const x = keypoints[j].y;
+		for (let i = 0; i < keypoints.length; i++) {
+			const y = keypoints[i].x;
+			const x = keypoints[i].y;
 
-				drawPoint(x, y, 3);
-			}
+			drawPoint(x, y, 3);
+
+			if (keypoints[i].name === 'index_finger_tip') drawing(x, y, moveable);
 		}
 	}
 }
 
 const draw = () => {
-	// ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight); // If u want to show video
-	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // If u want to show only hands
+	ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight); // If u want to show video
+	// ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // If u want to show only hands
 }
 
 const drawPath = (landmarks) => {
@@ -208,8 +229,6 @@ const drawPath = (landmarks) => {
 			const point = points[i];
 			region.lineTo(point.x, point.y);
 		}
-
-		region.stroke = 'red'
 		ctx.stroke(region);
 	}
 }
@@ -220,18 +239,11 @@ const drawPoint = (y, x, r) => {
 	ctx.fill();
 }
 
-/* const drawPoint = (landmarks) => {
-	for (let i = 0; i < landmarks.length; i++) {
-		const y = landmarks[i][0];
-		const x = landmarks[i][1];
+const drawing = (x, y, moveable) => {
+	if (moveable) draw_region.moveTo(y, x);
 
-		ctx.beginPath();
-
-		ctx.arc(x - 2, y - 2, 3, 0, 2 * Math.PI);
-		ctx.fillStyle = 'black';
-
-		ctx.fill();
-	}
-} */
+	draw_region.lineTo(y, x);
+	drawing_ctx.stroke(draw_region);
+}
 
 document.addEventListener('DOMContentLoaded', init);
