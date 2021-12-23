@@ -150,7 +150,7 @@ const loadModels = () => {
 			maxHands: 1,
 			runtime: 'tfjs',
 			detectorModelUrl: '/assets/models/detector.json',
-			// landmarkModelUrl: '/assets/models/landmark.json',
+			landmarkModelUrl: '/assets/models/landmark.json',
 		})
 		.then(detect)
 		.catch(e => {
@@ -212,8 +212,8 @@ const predictions = async (net, moveable = false) => {
 }
 
 const draw = () => {
-	ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight); // If u want to show video
-	// ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // If u want to show only hands
+	// ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight); // If u want to show video
+	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // If u want to show only hands
 }
 
 const drawPath = (landmarks) => {
