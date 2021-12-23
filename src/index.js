@@ -1,6 +1,6 @@
 import * as tfjs from "@tensorflow/tfjs";
-import * as handpose from "@tensorflow-models/handpose";
-import * as fp from 'fingerpose';
+import * as handpose from "@tensorflow-models/hand-pose-detection";
+import '@tensorflow/tfjs-backend-webgl';
 
 import { fingerJoints } from './constants';
 
@@ -129,12 +129,21 @@ const loadModels = () => {
 	});
 
 	// Load
-	handpose.load()
+	const model = handpose.SupportedModels.MediaPipeHands;
+	handpose
+		.createDetector(model, {
+			maxHands: 2,
+			runtime: 'tfjs',
+			detectorModelUrl: '/assets/models/detector.json',
+			// landmarkModelUrl: '/assets/models/landmark.json',
+		})
 		.then(detect)
-		.catch(() => {
+		.catch(e => {
 			ALERT.error("Sorry, an error occurred", {
 				stable: true,
 			});
+
+			console.log(e);
 		})
 		.finally(() => {
 			at.end();
@@ -143,6 +152,9 @@ const loadModels = () => {
 
 const detect = async (net) => {
 	const canvas = getCanvas();
+	ctx.fillStyle = 'rgb(217, 217, 217)';
+	ctx.strokeStyle = 'rgb(255, 255, 255)';
+
 	wrapper.append(
 		createEl('div', { class: 'webcam' }, canvas)
 	);
@@ -150,26 +162,37 @@ const detect = async (net) => {
 	video.parentElement.classList.add('hidden');
 	video.nextElementSibling.remove();
 
-	setInterval(() => predictions(net, canvas), FPS);
+	predictions(net);
+	setInterval(() => predictions(net), FPS);
 }
 
-const predictions = async (net, canvas) => {
+const predictions = async (net) => {
 	// Detect
 	const hands = await net.estimateHands(video);
-	ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
+	// Draw
+	draw();
 
 	if (hands.length > 0) {
-		const keypoints = hands[0].landmarks;
+		for (let i = 0; i < hands.length; i++) {
+			const keypoints = hands[i].keypoints;
 
-		// Draw path
-		drawPath(keypoints);
+			// Draw path
+			drawPath(keypoints);
 
-		for (let i = 0; i < keypoints.length; i++) {
-			const y = keypoints[i][0];
-			const x = keypoints[i][1];
-			drawPoint(x - 2, y - 2, 3);
+			for (let j = 0; j < keypoints.length; j++) {
+				const y = keypoints[j].x;
+				const x = keypoints[j].y;
+
+				drawPoint(x, y, 3);
+			}
 		}
 	}
+}
+
+const draw = () => {
+	// ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight); // If u want to show video
+	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // If u want to show only hands
 }
 
 const drawPath = (landmarks) => {
@@ -180,12 +203,13 @@ const drawPath = (landmarks) => {
 		const points = fingerJoints[finger].map(idx => landmarks[idx]);
 
 		const region = new Path2D();
-		region.moveTo(points[0][0], points[0][1]);
+		region.moveTo(points[0].x, points[0].y);
 		for (let i = 1; i < points.length; i++) {
 			const point = points[i];
-			region.lineTo(point[0], point[1]);
+			region.lineTo(point.x, point.y);
 		}
 
+		region.stroke = 'red'
 		ctx.stroke(region);
 	}
 }
